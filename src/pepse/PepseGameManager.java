@@ -3,6 +3,7 @@ package pepse;
 import danogl.GameManager;
 import danogl.GameObject;
 import danogl.collisions.Layer;
+import danogl.components.Transition;
 import danogl.gui.ImageReader;
 import danogl.gui.SoundReader;
 import danogl.gui.UserInputListener;
@@ -15,6 +16,7 @@ import java.util.List;
 public class PepseGameManager extends GameManager {
 
 
+    private static final float CYCLE_LENGTH = 30;
 
     @Override
     public void initializeGame(ImageReader imageReader, SoundReader soundReader, UserInputListener inputListener, WindowController windowController) {
@@ -27,6 +29,11 @@ public class PepseGameManager extends GameManager {
         for (Block block : blocks) {
             gameObjects().addGameObject(block, Layer.STATIC_OBJECTS);
         }
+
+        GameObject night = pepse.world.daynight.Night.create(windowController.getWindowDimensions(), CYCLE_LENGTH);
+        gameObjects().addGameObject(night, Layer.BACKGROUND);
+
+
     }
 
     public static void main(String[] args) {
