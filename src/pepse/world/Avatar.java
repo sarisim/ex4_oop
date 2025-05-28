@@ -4,6 +4,7 @@ import danogl.GameObject;
 import danogl.collisions.Collision;
 import danogl.gui.ImageReader;
 import danogl.gui.UserInputListener;
+import danogl.gui.rendering.AnimationRenderable;
 import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
 
@@ -17,6 +18,11 @@ public class Avatar extends GameObject {
     private enum State {
         IDLE, RUN, JUMP
     }
+    private final AnimationRenderable IDLE_ANIMATION;
+    private AnimationRenderable RUN_ANIMATION;
+    private AnimationRenderable JUMP_ANIMATION;
+    private Boolean walkingDirection = true;
+
 
     private final UserInputListener inputListener;
 
@@ -24,11 +30,38 @@ public class Avatar extends GameObject {
                   UserInputListener inputListener,
                   ImageReader imageReader){
         super(topLeftCorner,Vector2.ONES.mult(50),
-                imageReader.readImage("assets/assets/idle_0.png",true));
+                imageReader.readImage("assets/idle_0.png",true));
         transform().setAccelerationY(GRAVITY);
         physics().preventIntersectionsFromDirection(Vector2.ZERO);
         this.inputListener = inputListener;
         this.energy = 100;
+        IDLE_ANIMATION = getIdleAnimation(imageReader);
+        RUN_ANIMATION = getRunAnimation(imageReader);
+        JUMP_ANIMATION = getJumpAnimation(imageReader);
+    }
+
+    private AnimationRenderable getJumpAnimation(ImageReader imageReader) {
+        Renderable[] clips = new Renderable[4];
+        for (int i = 0; i < clips.length; i++) {
+            clips[i] = imageReader.readImage("assets/jump_" + i + ".png", true);
+        }
+        return new AnimationRenderable(clips, 0.5);
+    }
+
+    private AnimationRenderable getRunAnimation(ImageReader imageReader) {
+        Renderable[] clips = new Renderable[5];
+        for (int i = 0; i < clips.length; i++) {
+            clips[i] = imageReader.readImage("assets/run_" + i + ".png", true);
+        }
+        return new AnimationRenderable(clips, 0.5);
+    }
+
+    private AnimationRenderable getIdleAnimation(ImageReader imageReader) {
+        Renderable[] clips = new Renderable[4];
+        for (int i = 0; i < clips.length; i++) {
+            clips[i] = imageReader.readImage("assets/idle_" + i + ".png", true);
+        }
+        return new AnimationRenderable(clips, 0.5);
     }
 
     @Override
@@ -39,17 +72,29 @@ public class Avatar extends GameObject {
             xVel -= VELOCITY_X;
         if(inputListener.isKeyPressed(KeyEvent.VK_RIGHT))
             xVel += VELOCITY_X;
-        if (xVel != 0 && updateEnergy(State.RUN)){
+        if (xVel > 0 && updateEnergy(State.RUN)){
             transform().setVelocityX(xVel);
+            renderer().setIsFlippedHorizontally(walkingDirection);
+            renderer().setRenderable(RUN_ANIMATION);
+            walkingDirection = false;
+        }
+        else if (xVel < 0 && updateEnergy(State.RUN)){
+            transform().setVelocityX(xVel);
+            renderer().setRenderable(RUN_ANIMATION);
+            renderer().setIsFlippedHorizontally(walkingDirection);
+            walkingDirection = true;
+        }
+        else {
+            transform().setVelocityX(0);
         }
         if(inputListener.isKeyPressed(KeyEvent.VK_SPACE) && getVelocity().y() == 0) {
             if(updateEnergy(State.JUMP)){
-                transform().setVelocityY(VELOCITY_Y);
-            }
+                transform().setVelocityY(VELOCITY_Y);}
+                renderer().setRenderable(JUMP_ANIMATION);
         }
-        System.out.println(getVelocity());
         if (getVelocity().y() == 0 && getVelocity().x() == 0){
             updateEnergy(State.IDLE);
+            renderer().setRenderable(IDLE_ANIMATION);
         }
     }
 
@@ -83,7 +128,6 @@ public class Avatar extends GameObject {
                 if (energy > 100){
                     energy = 100;
                 }
-
                 return true;
             default:
                 return false;
