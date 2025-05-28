@@ -4,52 +4,110 @@ import danogl.GameObject;
 import danogl.collisions.Collision;
 import danogl.gui.ImageReader;
 import danogl.gui.UserInputListener;
+import danogl.gui.rendering.AnimationRenderable;
 import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
 
 import java.awt.event.KeyEvent;
+import java.util.HashSet;
+import java.util.List;
+
 
 public class Avatar extends GameObject {
     private static final float GRAVITY = 600;
     private static final float VELOCITY_X = 400;
     private static final float VELOCITY_Y = -650;
-    private float energy;
+    public static final int AVATAR_SIZE = 50;
+
     private enum State {
         IDLE, RUN, JUMP
     }
-
+    private float energy;
+    private final AnimationRenderable IDLE_ANIMATION;
+    private final AnimationRenderable RUN_ANIMATION;
+    private final AnimationRenderable JUMP_ANIMATION;
+    private Boolean walkingDirection = true;
+    private final HashSet<JumpObserver> JumpObservers = new HashSet<JumpObserver>();
     private final UserInputListener inputListener;
 
     public Avatar(Vector2 topLeftCorner,
                   UserInputListener inputListener,
                   ImageReader imageReader){
-        super(topLeftCorner,Vector2.ONES.mult(50),
-                imageReader.readImage("assets/assets/idle_0.png",true));
+        super(topLeftCorner,Vector2.ONES.mult(AVATAR_SIZE),
+                imageReader.readImage("assets/idle_0.png",true));
         transform().setAccelerationY(GRAVITY);
         physics().preventIntersectionsFromDirection(Vector2.ZERO);
         this.inputListener = inputListener;
         this.energy = 100;
+        IDLE_ANIMATION = getIdleAnimation(imageReader);
+        RUN_ANIMATION = getRunAnimation(imageReader);
+        JUMP_ANIMATION = getJumpAnimation(imageReader);
+    }
+
+    private AnimationRenderable getJumpAnimation(ImageReader imageReader) {
+        Renderable[] clips = new Renderable[4];
+        for (int i = 0; i < clips.length; i++) {
+            clips[i] = imageReader.readImage("assets/jump_" + i + ".png", true);
+        }
+        return new AnimationRenderable(clips, 0.5);
+    }
+
+    private AnimationRenderable getRunAnimation(ImageReader imageReader) {
+        Renderable[] clips = new Renderable[5];
+        for (int i = 0; i < clips.length; i++) {
+            clips[i] = imageReader.readImage("assets/run_" + i + ".png", true);
+        }
+        return new AnimationRenderable(clips, 0.5);
+    }
+
+    private AnimationRenderable getIdleAnimation(ImageReader imageReader) {
+        Renderable[] clips = new Renderable[4];
+        for (int i = 0; i < clips.length; i++) {
+            clips[i] = imageReader.readImage("assets/idle_" + i + ".png", true);
+        }
+        return new AnimationRenderable(clips, 0.5);
     }
 
     @Override
     public void update(float deltaTime) {
         super.update(deltaTime);
         float xVel = 0;
+        //calculate the moving direction horizontally
         if(inputListener.isKeyPressed(KeyEvent.VK_LEFT))
             xVel -= VELOCITY_X;
         if(inputListener.isKeyPressed(KeyEvent.VK_RIGHT))
             xVel += VELOCITY_X;
-        if (xVel != 0 && updateEnergy(State.RUN)){
+        //check if the player is able to move,
+        if (updateEnergy(State.RUN)){
+            //according to the direction, update the animation direction
+            renderer().setRenderable(RUN_ANIMATION);
+            if (xVel>0){
+                renderer().setIsFlippedHorizontally(walkingDirection);
+                walkingDirection = false;
+            }
+            if (xVel < 0){
+                renderer().setIsFlippedHorizontally(walkingDirection);
+                walkingDirection = true;
+            }
             transform().setVelocityX(xVel);
         }
+        // if the player don't move, set the velocity to 0
+        else {
+            transform().setVelocityX(0);
+        }
+        //jumping state
         if(inputListener.isKeyPressed(KeyEvent.VK_SPACE) && getVelocity().y() == 0) {
             if(updateEnergy(State.JUMP)){
-                transform().setVelocityY(VELOCITY_Y);
+                transform().setVelocityY(VELOCITY_Y);}
+                renderer().setRenderable(JUMP_ANIMATION);
+            for (JumpObserver observer : this.JumpObservers){
+                observer.update(true);
             }
         }
-        System.out.println(getVelocity());
+        //idle state
         if (getVelocity().y() == 0 && getVelocity().x() == 0){
             updateEnergy(State.IDLE);
+            renderer().setRenderable(IDLE_ANIMATION);
         }
     }
 
@@ -83,10 +141,12 @@ public class Avatar extends GameObject {
                 if (energy > 100){
                     energy = 100;
                 }
-
                 return true;
             default:
                 return false;
         }
+    }
+    public void registerJumpObserver(JumpObserver gameObject){
+        this.JumpObservers.add(gameObject);
     }
 }

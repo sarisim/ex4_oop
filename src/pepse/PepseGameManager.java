@@ -12,6 +12,10 @@ import pepse.world.Avatar;
 import pepse.world.Block;
 import pepse.world.Terrain;
 import pepse.world.UI.EneregyUi;
+import pepse.world.trees.Flora;
+import pepse.world.trees.Leaf;
+import pepse.world.trees.Tree;
+import pepse.world.trees.Trunk;
 
 import java.util.List;
 
@@ -41,14 +45,24 @@ public class PepseGameManager extends GameManager {
         GameObject sunHalo = pepse.world.daynight.SunHalo.create(sun);
         gameObjects().addGameObject(sunHalo, Layer.BACKGROUND);
 
-        //TODO figure out how to spawn the avatar at the correct height
-        Avatar avatar =new Avatar(windowController.getWindowDimensions().mult(TEST),
+        Avatar avatar =new Avatar(new Vector2(0, terrain.groundHeightAt(0)-Avatar.AVATAR_SIZE),
                 inputListener,imageReader);
         gameObjects().addGameObject(avatar,Layer.DEFAULT);
 
+        //TODO temp size for energy text, figure out what to do
         EneregyUi energyText = new EneregyUi(Vector2.ZERO,new Vector2(30,30),
                 avatar::getEnergy);
-        gameObjects().addGameObject(energyText,Layer.BACKGROUND);
+        gameObjects().addGameObject(energyText,Layer.UI);
+
+        Flora flora = new Flora(terrain::groundHeightAt);
+//        Tree tree = flora.createTree(new Vector2(200,terrain.groundHeightAt(200)));
+        List<Tree> trees = flora.createInRange(0,(int)windowController.getWindowDimensions().x());
+        for (Tree tree : trees) {
+            gameObjects().addGameObject(tree.getTrunk(),Layer.DEFAULT);
+            for (Leaf leaf : tree.getLeaves()) {
+                gameObjects().addGameObject(leaf,Layer.STATIC_OBJECTS);
+            }
+        }
     }
 
     public static void main(String[] args) {
