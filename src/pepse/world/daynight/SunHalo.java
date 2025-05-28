@@ -8,8 +8,6 @@ import danogl.util.Vector2;
 
 import java.awt.*;
 
-import static pepse.world.daynight.Sun.ENDING_POINT_SUN_ANGLE;
-import static pepse.world.daynight.Sun.STARTING_POINT_SUN_ANGLE;
 
 public class SunHalo {
 
@@ -17,12 +15,8 @@ public class SunHalo {
         GameObject halo = new GameObject(sun.getTopLeftCorner(), sun.getDimensions().mult(1.5f),
                 new OvalRenderable(new Color(255, 255, 0, 20)));
         halo.setTag("sunHalo");
-//        halo.setCenter(sun.getCenter());
         halo.addComponent( deltaTime -> halo.setCenter(sun.getCenter()));
         halo.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
-        halo.renderer().setOpaqueness(0.5f); // Set a semi-transparent effect
-
-        // Set up the transition for the sun's position and opacity
 
         return halo;
     }
