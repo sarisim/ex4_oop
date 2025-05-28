@@ -9,27 +9,31 @@ import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
 
 import java.awt.event.KeyEvent;
+import java.util.HashSet;
+import java.util.List;
+
 
 public class Avatar extends GameObject {
     private static final float GRAVITY = 600;
     private static final float VELOCITY_X = 400;
     private static final float VELOCITY_Y = -650;
-    private float energy;
+    public static final int AVATAR_SIZE = 50;
+
     private enum State {
         IDLE, RUN, JUMP
     }
+    private float energy;
     private final AnimationRenderable IDLE_ANIMATION;
-    private AnimationRenderable RUN_ANIMATION;
-    private AnimationRenderable JUMP_ANIMATION;
+    private final AnimationRenderable RUN_ANIMATION;
+    private final AnimationRenderable JUMP_ANIMATION;
     private Boolean walkingDirection = true;
-
-
+    private final HashSet<JumpObserver> JumpObservers = new HashSet<JumpObserver>();
     private final UserInputListener inputListener;
 
     public Avatar(Vector2 topLeftCorner,
                   UserInputListener inputListener,
                   ImageReader imageReader){
-        super(topLeftCorner,Vector2.ONES.mult(50),
+        super(topLeftCorner,Vector2.ONES.mult(AVATAR_SIZE),
                 imageReader.readImage("assets/idle_0.png",true));
         transform().setAccelerationY(GRAVITY);
         physics().preventIntersectionsFromDirection(Vector2.ZERO);
@@ -68,30 +72,39 @@ public class Avatar extends GameObject {
     public void update(float deltaTime) {
         super.update(deltaTime);
         float xVel = 0;
+        //calculate the moving direction horizontally
         if(inputListener.isKeyPressed(KeyEvent.VK_LEFT))
             xVel -= VELOCITY_X;
         if(inputListener.isKeyPressed(KeyEvent.VK_RIGHT))
             xVel += VELOCITY_X;
-        if (xVel > 0 && updateEnergy(State.RUN)){
-            transform().setVelocityX(xVel);
-            renderer().setIsFlippedHorizontally(walkingDirection);
+        //check if the player is able to move,
+        if (updateEnergy(State.RUN)){
+            //according to the direction, update the animation direction
             renderer().setRenderable(RUN_ANIMATION);
-            walkingDirection = false;
-        }
-        else if (xVel < 0 && updateEnergy(State.RUN)){
+            if (xVel>0){
+                renderer().setIsFlippedHorizontally(walkingDirection);
+                walkingDirection = false;
+            }
+            if (xVel < 0){
+                renderer().setIsFlippedHorizontally(walkingDirection);
+                walkingDirection = true;
+            }
             transform().setVelocityX(xVel);
-            renderer().setRenderable(RUN_ANIMATION);
-            renderer().setIsFlippedHorizontally(walkingDirection);
-            walkingDirection = true;
         }
+        // if the player don't move, set the velocity to 0
         else {
             transform().setVelocityX(0);
         }
+        //jumping state
         if(inputListener.isKeyPressed(KeyEvent.VK_SPACE) && getVelocity().y() == 0) {
             if(updateEnergy(State.JUMP)){
                 transform().setVelocityY(VELOCITY_Y);}
                 renderer().setRenderable(JUMP_ANIMATION);
+            for (JumpObserver observer : this.JumpObservers){
+                observer.update(true);
+            }
         }
+        //idle state
         if (getVelocity().y() == 0 && getVelocity().x() == 0){
             updateEnergy(State.IDLE);
             renderer().setRenderable(IDLE_ANIMATION);
@@ -132,5 +145,8 @@ public class Avatar extends GameObject {
             default:
                 return false;
         }
+    }
+    public void registerJumpObserver(JumpObserver gameObject){
+        this.JumpObservers.add(gameObject);
     }
 }
