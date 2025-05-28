@@ -16,7 +16,7 @@ public class PepseGameManager extends GameManager {
 
 
     private static final float NIGHT_CYCLE_LENGTH = 30;
-    private static final float DAY_CYCLE_LENGTH = 60;
+    private static final float DAY_CYCLE_LENGTH = 45;
 
     @Override
     public void initializeGame(ImageReader imageReader, SoundReader soundReader, UserInputListener inputListener, WindowController windowController) {

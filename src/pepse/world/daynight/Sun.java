@@ -26,6 +26,18 @@ public class Sun {
         cycleCenter = new Vector2(windowDimensions.x()/2, groundHeightAtX0);
         Vector2 initialSunCenter = sun.getCenter();
 
+        Transition<Float> transition = new Transition<>(
+                sun,
+                (angle) -> sun.setCenter
+                        (initialSunCenter.subtract(cycleCenter)
+                                .rotated(angle)
+                                .add(cycleCenter)), //fix here, had to change the types from what it said in instructions
+                STARTING_POINT_SUN_ANGLE,
+                ENDING_POINT_SUN_ANGLE ,
+                Transition.LINEAR_INTERPOLATOR_FLOAT,
+                60,
+                Transition.TransitionType.TRANSITION_LOOP,
+                null);
 
 //        sun.addComponent(positionTransition);
         return sun;
