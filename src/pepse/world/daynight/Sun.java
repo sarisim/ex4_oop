@@ -25,7 +25,19 @@ public class Sun {
         sun.setTag("sun");
         cycleCenter = new Vector2(windowDimensions.x()/2, groundHeightAtX0);
         Vector2 initialSunCenter = sun.getCenter();
+        Transition<Float> transition = new Transition<Float>(
+                sun,
+                (Float angle) -> sun.setCenter
+                        (initialSunCenter.subtract(cycleCenter)
+                                .rotated(angle)
+                                .add(cycleCenter)),
+                STARTING_POINT_SUN_ANGLE,
+                ENDING_POINT_SUN_ANGLE,
+                Transition.LINEAR_INTERPOLATOR_FLOAT,
+                cycleLength,
+                Transition.TransitionType.TRANSITION_LOOP, null
 
+        );
 
 //        sun.addComponent(positionTransition);
         return sun;
