@@ -3,6 +3,7 @@ package pepse;
 import danogl.GameManager;
 import danogl.GameObject;
 import danogl.collisions.Layer;
+import danogl.components.ScheduledTask;
 import danogl.gui.ImageReader;
 import danogl.gui.SoundReader;
 import danogl.gui.UserInputListener;
@@ -52,7 +53,7 @@ public class PepseGameManager extends GameManager {
         gameObjects().addGameObject(sunHalo, Layer.BACKGROUND);
 
         Avatar avatar =new Avatar(new Vector2(0, terrain.groundHeightAt(0)-Avatar.AVATAR_SIZE),
-                inputListener,imageReader, gameObjects()::removeGameObject, gameObjects()::addGameObject);
+                inputListener,imageReader);
         avatar.setTag("avatar");
         gameObjects().addGameObject(avatar,Layer.DEFAULT);
 
@@ -62,7 +63,6 @@ public class PepseGameManager extends GameManager {
         gameObjects().addGameObject(energyText,Layer.UI);
 
         Flora flora = new Flora(terrain::groundHeightAt);
-//        Tree tree = flora.createTree(new Vector2(200,terrain.groundHeightAt(200)));
         List<Tree> trees = flora.createInRange(0,(int)windowController.getWindowDimensions().x());
         for (Tree tree : trees) {
             gameObjects().addGameObject(tree.getTrunk(),Layer.DEFAULT);
