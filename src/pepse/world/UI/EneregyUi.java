@@ -22,7 +22,7 @@ public class EneregyUi extends GameObject {
      * @param dimensions    Width and height in window coordinates.
      */
     public EneregyUi(Vector2 topLeftCorner, Vector2 dimensions,Supplier<Float> func) {
-        super(topLeftCorner, dimensions, new TextRenderable(String.valueOf(func.get())));
+        super(topLeftCorner, dimensions, new TextRenderable(String.valueOf((int)Math.floor(func.get()))));
         this.energyFunc = func;
         this.energy = func.get();
         setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
@@ -33,7 +33,7 @@ public class EneregyUi extends GameObject {
     public void update(float deltaTime) {
         super.update(deltaTime);
         this.energy = energyFunc.get();
-        renderer().setRenderable(new TextRenderable(String.valueOf(energyFunc.get())));
-
+        renderer().setRenderable(new TextRenderable(
+                String.valueOf((int)Math.floor(this.energy)) + "%"));
     }
 }

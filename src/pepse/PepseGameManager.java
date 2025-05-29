@@ -3,6 +3,7 @@ package pepse;
 import danogl.GameManager;
 import danogl.GameObject;
 import danogl.collisions.Layer;
+import danogl.components.ScheduledTask;
 import danogl.gui.ImageReader;
 import danogl.gui.SoundReader;
 import danogl.gui.UserInputListener;
@@ -120,10 +121,12 @@ public class PepseGameManager extends GameManager {
         Rain rain = new Rain(gameObjects()::addGameObject, gameObjects()::removeGameObject,
                 cloud, imageReader, camera);
         avatar.registerJumpObserver(rain);
+
     }
 
     public static void main(String[] args) {
         new PepseGameManager().run();
+
     }
 
     @Override
