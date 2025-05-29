@@ -1,6 +1,8 @@
 package pepse.world;
 
 import danogl.GameObject;
+import danogl.collisions.GameObjectCollection;
+import danogl.collisions.Layer;
 import danogl.gui.rendering.RectangleRenderable;
 import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
@@ -9,7 +11,9 @@ import pepse.util.NoiseGenerator;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.function.BiConsumer;
 
 public class Terrain {
     private static final double FACTOR = Block.SIZE * 7;
@@ -20,6 +24,12 @@ public class Terrain {
     private static final int TERRAIN_DEPTH = 20;
     private final Vector2 winDims;
     private final NoiseGenerator noiseGenerator;
+    private final List<GameObject> terrainBlocks = new ArrayList<>();
+    private int minX;
+    private int maxX;
+    private final java.util.Set<String> createdPositions = new java.util.HashSet<>();
+
+
 
     public Terrain(Vector2 windowDimensions, int seed) {
         winDims = windowDimensions;
@@ -34,38 +44,45 @@ public class Terrain {
         return groundHeightAtX0 + noise;
     }
 
-    public List<Block> createInRange(int minX, int maxX) {
+    public List<Block> createInRange(int minX, int maxX,
+                                      BiConsumer<GameObject, Integer> gameObjectAdder) {
         List<Block> blocks = new ArrayList<>();
-//        int range = maxX - minX;
-//        int ratio_num = range / Block.SIZE + 1;
-//        ratio_num *= Block.SIZE;
-//        int startX = maxX - ratio_num;
         int startX = minX - (minX % Block.SIZE);
-        int endX = maxX + Block.SIZE; // to ensure coverage
+        int endX = maxX + Block.SIZE;
 
         for (int x = startX; x <= endX; x+= Block.SIZE) {
             double height = Math.floor(groundHeightAt(x) / Block.SIZE) * Block.SIZE;
-//            int i = 0;
-            for (int y = (int)height, i = 0; y < winDims.y() && i++ <TERRAIN_DEPTH; y+= Block.SIZE) {
-                Renderable renderable = new RectangleRenderable(ColorSupplier.approximateColor(BASE_GROUND_COLOR));
+            for (int y = (int)height, i = 0; i++ < TERRAIN_DEPTH; y+= Block.SIZE) {
+                String key = x + "," + Math.round(y); // inside createInRange
+                if (createdPositions.contains(key))
+                    continue;
+
+                createdPositions.add(key);
+                Renderable renderable =
+                        new RectangleRenderable(ColorSupplier.approximateColor(BASE_GROUND_COLOR));
                 Block block = new Block(new Vector2(x, y), renderable);
                 block.setTag("ground");
                 blocks.add(block);
+                terrainBlocks.add(block);
+                gameObjectAdder.accept(block, Layer.STATIC_OBJECTS);
             }
-//            for (int y =(int)winDims.y(); y >=height; y -= Block.SIZE) {
-//                Renderable renderable = new RectangleRenderable(ColorSupplier.approximateColor(BASE_GROUND_COLOR));
-//                Block block = new Block(new Vector2(x, y), renderable);
-//                block.setTag("ground");
-//                blocks.add(block);
-//            }
-
         }
         return blocks;
-//        List<Block> blocks = new ArrayList<>();
-//        Block block = new Block(Vector2.ZERO, new RectangleRenderable(ColorSupplier.approximateColor(BASE_GROUND_COLOR)));
-//        blocks.add(block);
-//
-//        return blocks;
     }
 
+    public void updateTerrainRange(int avatarX, int margin,
+                                   BiConsumer<GameObject, Integer> gameObjectAdder,
+                                   BiConsumer<GameObject, Integer> gameObjectRemover) {
+        int targetMin = avatarX - margin * 2;
+        if (targetMin < minX) {
+            createInRange(targetMin, minX, gameObjectAdder);
+            minX = targetMin;
+        }
+
+        int targetMax = avatarX + margin * 2;
+        if (targetMax > maxX) {
+            createInRange(maxX, targetMax, gameObjectAdder);
+            maxX = targetMax;
+        }
+    }
 }

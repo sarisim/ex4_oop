@@ -109,7 +109,19 @@ public class Cloud  {
         return new Vector2( blocks.get(0).getTopLeftCorner().x(), cloudOrigin.y() + (blockSize * CLOUD_ROWS));
     }
 
+    public float getYPosition() {
+        return cloudOrigin.y();
+    }
+
     public float getCloudBound() {
+        return (CLOUD_COLS * blockSize);
+    }
+
+    public float getCloudHeight()  {
+        return (CLOUD_ROWS * blockSize);
+    }
+
+    public float getCloudWidth() {
         return (CLOUD_COLS * blockSize);
     }
 }

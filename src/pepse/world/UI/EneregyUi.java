@@ -1,6 +1,7 @@
 package pepse.world.UI;
 
 import danogl.GameObject;
+import danogl.components.CoordinateSpace;
 import danogl.gui.rendering.Renderable;
 import danogl.gui.rendering.TextRenderable;
 import danogl.util.Vector2;
@@ -24,6 +25,7 @@ public class EneregyUi extends GameObject {
         super(topLeftCorner, dimensions, new TextRenderable(String.valueOf(func.get())));
         this.energyFunc = func;
         this.energy = func.get();
+        setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
 
     }
 
@@ -32,5 +34,6 @@ public class EneregyUi extends GameObject {
         super.update(deltaTime);
         this.energy = energyFunc.get();
         renderer().setRenderable(new TextRenderable(String.valueOf(energyFunc.get())));
+
     }
 }

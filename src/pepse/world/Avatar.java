@@ -172,4 +172,6 @@ public class Avatar extends GameObject {
     public void registerJumpObserver(JumpObserver gameObject){
         this.JumpObservers.add(gameObject);
     }
+
+
 }

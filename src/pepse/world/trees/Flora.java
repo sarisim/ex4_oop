@@ -1,5 +1,6 @@
 package pepse.world.trees;
 
+import danogl.GameObject;
 import danogl.util.Vector2;
 import pepse.world.Block;
 
@@ -7,6 +8,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 public class Flora {
@@ -77,5 +79,11 @@ public class Flora {
 
     private boolean LeafOrNotToLEAF(){
         return rand.nextDouble() < 0.8;
+    }
+
+    public void updateTrees(int avatarX, int x, BiConsumer<GameObject, Integer> gameObjectAdder,
+                            BiConsumer<GameObject, Integer> gameObjectRemover) {
+
+
     }
 }
