@@ -48,8 +48,7 @@ public class Cloud  {
         }
 
         transitionSpace();
-       transitionColor();
-
+        transitionColor();
     }
 
     private void transitionColor() {

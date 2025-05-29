@@ -45,13 +45,21 @@ public class PepseGameManager extends GameManager {
         this.windowDims = windowController.getWindowDimensions();
 
         Terrain terrain =  new Terrain(windowController.getWindowDimensions(), 1234);
-        List<Block> blocks = terrain.createInRange(0, (int)windowController.getWindowDimensions().x(),
-                gameObjects()::addGameObject);
+//        List<Block> blocks = terrain.createInRange(0, (int)windowController.getWindowDimensions().x(),
+//                gameObjects()::addGameObject);
 //        for (Block block : blocks) {
 //            gameObjects().addGameObject(block, Layer.DEFAULT);
 //        }
-        this.terrain = terrain;
 
+        int avatarInitialX = (int) (windowDims.x() / 2f);
+
+        this.terrain = terrain;
+        terrain.updateTerrainRange(
+                avatarInitialX,
+                (int) windowDims.x(),
+                gameObjects()::addGameObject,
+                gameObjects()::removeGameObject
+        );
         GameObject night = pepse.world.daynight.Night.create(windowController.getWindowDimensions(), NIGHT_CYCLE_LENGTH);
         gameObjects().addGameObject(night, Layer.BACKGROUND);
         GameObject sun = pepse.world.daynight.Sun.create(windowController.getWindowDimensions(), DAY_CYCLE_LENGTH);
@@ -59,7 +67,9 @@ public class PepseGameManager extends GameManager {
         GameObject sunHalo = pepse.world.daynight.SunHalo.create(sun);
         gameObjects().addGameObject(sunHalo, Layer.BACKGROUND);
 
-        Avatar avatar =new Avatar(new Vector2(windowDims.x()/2f, terrain.groundHeightAt(windowDims.x()/2f)-Avatar.AVATAR_SIZE),
+        float avatarInitialY = terrain.groundHeightAt(avatarInitialX) - Avatar.AVATAR_SIZE;
+
+        Avatar avatar =new Avatar(new Vector2(avatarInitialX, avatarInitialY),
                 inputListener,imageReader, gameObjects()::removeGameObject, gameObjects()::addGameObject);
         this.avatar = avatar;
         avatar.setTag("avatar");
@@ -72,8 +82,9 @@ public class PepseGameManager extends GameManager {
 
         Flora flora = new Flora(terrain::groundHeightAt);
         this.flora = flora;
-//        Tree tree = flora.createTree(new Vector2(200,terrain.groundHeightAt(200)));
-        List<Tree> trees = flora.createInRange(0,(int)windowController.getWindowDimensions().x());
+////        Tree tree = flora.createTree(new Vector2(200,terrain.groundHeightAt(200)));
+        List<Tree> trees = flora.createInRange(0,(int)windowController.getWindowDimensions().x(),
+                gameObjects()::addGameObject);
         for (Tree tree : trees) {
             gameObjects().addGameObject(tree.getTrunk(),Layer.DEFAULT);
             for (Leaf leaf : tree.getLeaves()) {
@@ -83,15 +94,13 @@ public class PepseGameManager extends GameManager {
                 gameObjects().addGameObject(fruit,Layer.DEFAULT);
             }
         }
-
-        Cloud cloud = new Cloud(windowController.getWindowDimensions(), SIZE_CLOUD);
-        List<CloudBlock> cloudBlocks = cloud.getBlocks();
-        for (CloudBlock block : cloudBlocks) {
-            gameObjects().addGameObject(block, Layer.BACKGROUND);
-        }
-
-        Rain rain = new Rain(gameObjects()::addGameObject, gameObjects()::removeGameObject, cloud, imageReader);
-        avatar.registerJumpObserver(rain);
+//        flora = new Flora(terrain::groundHeightAt);
+//        flora.updateTrees(
+//                (int) avatar.getTopLeftCorner().x(),
+//                (int) windowDims.x(),
+//                gameObjects()::addGameObject,
+//                gameObjects()::removeGameObject
+//        );
 
         Vector2 initialAvatarLocation = new Vector2(avatar.getTopLeftCorner().x(),
                 terrain.groundHeightAt(avatar.getTopLeftCorner().x()) - Avatar.AVATAR_SIZE);
@@ -101,6 +110,16 @@ public class PepseGameManager extends GameManager {
                 windowController.getWindowDimensions(),
                 windowController.getWindowDimensions());
         setCamera(camera);
+
+        Cloud cloud = new Cloud(windowController.getWindowDimensions(), SIZE_CLOUD);
+        List<CloudBlock> cloudBlocks = cloud.getBlocks();
+        for (CloudBlock block : cloudBlocks) {
+            gameObjects().addGameObject(block, Layer.BACKGROUND);
+        }
+
+        Rain rain = new Rain(gameObjects()::addGameObject, gameObjects()::removeGameObject,
+                cloud, imageReader, camera);
+        avatar.registerJumpObserver(rain);
     }
 
     public static void main(String[] args) {

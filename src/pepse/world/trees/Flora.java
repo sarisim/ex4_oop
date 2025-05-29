@@ -1,25 +1,91 @@
 package pepse.world.trees;
 
 import danogl.GameObject;
+import danogl.collisions.Layer;
 import danogl.util.Vector2;
 import pepse.world.Block;
 
 import java.awt.*;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
-import java.util.Random;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
+import java.util.function.IntFunction;
 
 public class Flora {
-    private final Random rand = new Random();
+    private final Random rand = new Random(42);
     private final Function<Float, Float> heightFunc;
+    private int minX;
+    private int maxX;
+
+//    private final IntFunction<Float> groundHeightFunc;
+//    private final int seed;
+    private final Map<Integer, List<Tree>> treesByChunk = new HashMap<>();
+    private final int chunkSize = 50;
+
 
     public Flora(Function<Float, Float> heightFunc) {
         this.heightFunc = heightFunc;
     }
 
-    public List<Tree> createInRange(int minX, int maxX){
+//    public Flora(IntFunction<Float> groundHeightFunc, int seed) {
+//        this.groundHeightFunc = groundHeightFunc;
+//        this.seed = seed;
+//    }
+
+//    private List<Tree> generateChunkTrees(int chunkId) {
+//        List<Tree> trees = new ArrayList<>();
+//
+//        int startX = chunkId * chunkSize;
+//        int endX = startX + chunkSize;
+//
+//        for (int x = startX; x < endX; x += 15) {
+//            if (rand.nextFloat() < 0.1f) { // 10% chance of tree
+//                float groundY = groundHeightFunc.apply(x);
+//                trees.add(createTree(new Vector2(x, groundY)));
+//            }
+//        }
+//        return trees;
+//    }
+
+//    public void updateTrees(int avatarX, int viewWidth,
+//                            BiConsumer<GameObject, Integer> addFunc,
+//                            BiConsumer<GameObject, Integer> removeFunc) {
+//        int minChunk = (avatarX - viewWidth * 2) / chunkSize;
+//        int maxChunk = (avatarX + viewWidth * 2) / chunkSize;
+//
+//        Set<Integer> currentChunks = new HashSet<>(treesByChunk.keySet());
+//
+//        for (int chunk = minChunk; chunk <= maxChunk; chunk++) {
+//            if (!treesByChunk.containsKey(chunk)) {
+//                List<Tree> trees = generateChunkTrees(chunk);
+//                treesByChunk.put(chunk, trees);
+//                for (Tree t : trees) {
+//                    addFunc.accept(t.getTrunk(), Layer.DEFAULT);
+//                    t.getLeaves().forEach(leaf -> addFunc.accept(leaf, Layer.STATIC_OBJECTS));
+//                    t.getFruits().forEach(fruit -> addFunc.accept(fruit, Layer.DEFAULT));
+//                }
+//            }
+//            currentChunks.remove(chunk);
+//        }
+//
+//        // Remove far-away chunks
+//        for (int chunkToRemove : currentChunks) {
+//            List<Tree> trees = treesByChunk.remove(chunkToRemove);
+//            if (trees != null) {
+//                for (Tree t : trees) {
+//                    removeFunc.accept(t.getTrunk(), Layer.DEFAULT);
+//                    t.getLeaves().forEach(leaf -> removeFunc.accept(leaf, Layer.STATIC_OBJECTS));
+//                    t.getFruits().forEach(fruit -> removeFunc.accept(fruit, Layer.DEFAULT));
+//                }
+//            }
+//        }
+//    }
+
+
+
+    public List<Tree> createInRange(int minX, int maxX,
+                                    BiConsumer<GameObject, Integer> gameObjectAdder){
         List<Tree> trees = new ArrayList<>();
         for (float x = minX; x <= maxX; x+= 50){
             if (treeOrNotToTree()){
@@ -27,11 +93,19 @@ public class Flora {
                 trees.add(tree);
             }
         }
+//        for (Tree tree : trees) {
+//            gameObjectAdder.accept(tree.getTrunk(), Layer.DEFAULT);
+//            for (Leaf leaf : tree.getLeaves()) {
+//                gameObjectAdder.accept(leaf, Layer.STATIC_OBJECTS);
+//            }
+//            for (Fruit fruit : tree.getFruits()) {
+//                gameObjectAdder.accept(fruit, Layer.DEFAULT);
+//            }
+//        }
         return trees;
     }
 
     private Tree createTree(Vector2 location){
-        Random rand = new Random();
         int trunkHeight = rand.nextInt(150)+50;
         int trunkWidth = rand.nextInt(10) +10;
         int leafsLength = rand.nextInt(50)+100;
@@ -81,9 +155,18 @@ public class Flora {
         return rand.nextDouble() < 0.8;
     }
 
-    public void updateTrees(int avatarX, int x, BiConsumer<GameObject, Integer> gameObjectAdder,
+    public void updateTrees(int avatarX, int margin, BiConsumer<GameObject, Integer> gameObjectAdder,
                             BiConsumer<GameObject, Integer> gameObjectRemover) {
+        int targetMin = avatarX - margin * 2;
+        if (targetMin < minX) {
+            createInRange(targetMin, minX, gameObjectAdder);
+            minX = targetMin;
+        }
 
-
+        int targetMax = avatarX + margin * 2;
+        if (targetMax > maxX) {
+            createInRange(maxX, targetMax, gameObjectAdder);
+            maxX = targetMax;
+        }
     }
 }
