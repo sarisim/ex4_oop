@@ -43,21 +43,32 @@ public class Flora {
                 new Vector2(trunkWidth,trunkHeight));
         trunk.setTag("trunk");
 
-
+        List<Fruit> fruits = new ArrayList<>();
         List<Leaf> leaves = new ArrayList<>();
+
+
+
         for (int i = 0; i < leafsLength ; i += Leaf.LEAF_LENGTH) {
             for (int j = 0; j <leafsLength ; j += Leaf.LEAF_LENGTH) {
+                Vector2 leafLocation = new Vector2(test.x() + (trunkWidth / 2) + (i - leafsLength / 2),
+                        test.y() - ((j+Leaf.LEAF_LENGTH)));
                 if (LeafOrNotToLEAF()){
-                    Leaf leaf =new Leaf(
-                            new Vector2(test.x() + (trunkWidth / 2) + (i - leafsLength / 2),
-                                    test.y() - ((j+Leaf.LEAF_LENGTH))));
+                    Leaf leaf =Leaf.createLeaf(leafLocation);
                     leaf.setTag("leaf");
                     leaves.add(leaf);
-
+                }
+                if (FruitOrNotToFruit()){
+                    Fruit fruit = new Fruit(leafLocation);
+                    fruit.setTag("fruit");
+                    fruits.add(fruit);
                 }
             }
         }
-        return new Tree(trunk,leaves,trunkHeight+leafsLength);
+        return new Tree(trunk,leaves,fruits, trunkHeight+leafsLength);
+    }
+
+    private boolean FruitOrNotToFruit() {
+        return rand.nextDouble() < 0.05;
     }
 
     private boolean treeOrNotToTree(){

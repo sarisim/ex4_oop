@@ -2,6 +2,7 @@ package pepse.world;
 
 import danogl.GameObject;
 import danogl.collisions.Collision;
+import danogl.components.ScheduledTask;
 import danogl.gui.ImageReader;
 import danogl.gui.UserInputListener;
 import danogl.gui.rendering.AnimationRenderable;
@@ -11,6 +12,7 @@ import danogl.util.Vector2;
 import java.awt.event.KeyEvent;
 import java.util.HashSet;
 import java.util.List;
+import java.util.function.Consumer;
 
 
 public class Avatar extends GameObject {
@@ -18,9 +20,11 @@ public class Avatar extends GameObject {
     private static final float VELOCITY_X = 400;
     private static final float VELOCITY_Y = -650;
     public static final int AVATAR_SIZE = 50;
+    private final Consumer<GameObject> removeFunc;
+    private final Consumer<GameObject> gameObjectAdder;
 
-    private enum State {
-        IDLE, RUN, JUMP
+    public static enum State {
+        IDLE, RUN, JUMP,FRUIT
     }
     private float energy;
     private final AnimationRenderable IDLE_ANIMATION;
@@ -32,13 +36,17 @@ public class Avatar extends GameObject {
 
     public Avatar(Vector2 topLeftCorner,
                   UserInputListener inputListener,
-                  ImageReader imageReader){
+                  ImageReader imageReader,
+                  Consumer<GameObject> gameObjectRemover,
+                  Consumer<GameObject> gameObjectAdder){
         super(topLeftCorner,Vector2.ONES.mult(AVATAR_SIZE),
                 imageReader.readImage("assets/idle_0.png",true));
         transform().setAccelerationY(GRAVITY);
         physics().preventIntersectionsFromDirection(Vector2.ZERO);
         this.inputListener = inputListener;
         this.energy = 100;
+        this.gameObjectAdder = gameObjectAdder;
+        this.removeFunc = gameObjectRemover;
         IDLE_ANIMATION = getIdleAnimation(imageReader);
         RUN_ANIMATION = getRunAnimation(imageReader);
         JUMP_ANIMATION = getJumpAnimation(imageReader);
@@ -117,12 +125,22 @@ public class Avatar extends GameObject {
         if(other.getTag().equals("block")){
             this.transform().setVelocityY(0);
         }
+        if(other.getTag().equals("fruit")){
+            updateEnergy(State.FRUIT);
+            this.removeFunc.accept(other);
+            new ScheduledTask(
+                    other,
+                    5,
+                    false,
+                    ()-> gameObjectAdder.accept((other))
+            );
+        }
     }
 
     public float getEnergy() {
         return energy;
     }
-    private boolean updateEnergy(State state) {
+    public boolean updateEnergy(State state) {
         switch (state){
             case RUN:
                 if (this.energy >= 0.5){
@@ -138,6 +156,11 @@ public class Avatar extends GameObject {
                 else return false;
             case IDLE:
                 energy += 1;
+                if (energy > 100){
+                    energy = 100;
+                }
+            case FRUIT:
+                energy += 10;
                 if (energy > 100){
                     energy = 100;
                 }

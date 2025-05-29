@@ -12,10 +12,7 @@ import pepse.world.Avatar;
 import pepse.world.Block;
 import pepse.world.Terrain;
 import pepse.world.UI.EneregyUi;
-import pepse.world.trees.Flora;
-import pepse.world.trees.Leaf;
-import pepse.world.trees.Tree;
-import pepse.world.trees.Trunk;
+import pepse.world.trees.*;
 
 import java.util.List;
 
@@ -29,6 +26,7 @@ public class PepseGameManager extends GameManager {
     @Override
     public void initializeGame(ImageReader imageReader, SoundReader soundReader, UserInputListener inputListener, WindowController windowController) {
         super.initializeGame(imageReader, soundReader, inputListener, windowController);
+        windowController.setTargetFramerate(60);
         GameObject sky = pepse.world.Sky.create(windowController.getWindowDimensions());
         gameObjects().addGameObject(sky, Layer.BACKGROUND);
 
@@ -46,7 +44,8 @@ public class PepseGameManager extends GameManager {
         gameObjects().addGameObject(sunHalo, Layer.BACKGROUND);
 
         Avatar avatar =new Avatar(new Vector2(0, terrain.groundHeightAt(0)-Avatar.AVATAR_SIZE),
-                inputListener,imageReader);
+                inputListener,imageReader, gameObjects()::removeGameObject, gameObjects()::addGameObject);
+        avatar.setTag("avatar");
         gameObjects().addGameObject(avatar,Layer.DEFAULT);
 
         //TODO temp size for energy text, figure out what to do
@@ -61,6 +60,9 @@ public class PepseGameManager extends GameManager {
             gameObjects().addGameObject(tree.getTrunk(),Layer.DEFAULT);
             for (Leaf leaf : tree.getLeaves()) {
                 gameObjects().addGameObject(leaf,Layer.STATIC_OBJECTS);
+            }
+            for (Fruit fruit : tree.getFruits()){
+                gameObjects().addGameObject(fruit,Layer.DEFAULT);
             }
         }
     }
