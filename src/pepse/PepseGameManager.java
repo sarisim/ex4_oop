@@ -12,6 +12,9 @@ import pepse.world.Avatar;
 import pepse.world.Block;
 import pepse.world.Terrain;
 import pepse.world.UI.EneregyUi;
+import pepse.world.clouds.Cloud;
+import pepse.world.clouds.CloudBlock;
+import pepse.world.clouds.Rain;
 import pepse.world.trees.Flora;
 import pepse.world.trees.Leaf;
 import pepse.world.trees.Tree;
@@ -24,6 +27,7 @@ public class PepseGameManager extends GameManager {
 
     private static final float NIGHT_CYCLE_LENGTH = 30;
     private static final float DAY_CYCLE_LENGTH = 60;
+    private static final float SIZE_CLOUD = 20;
     private final float TEST = 0.5f;
 
     @Override
@@ -63,10 +67,28 @@ public class PepseGameManager extends GameManager {
                 gameObjects().addGameObject(leaf,Layer.STATIC_OBJECTS);
             }
         }
+
+        Cloud cloud = new Cloud(windowController.getWindowDimensions(), SIZE_CLOUD);
+        List<CloudBlock> cloudBlocks = cloud.getBlocks();
+        for (CloudBlock block : cloudBlocks) {
+            gameObjects().addGameObject(block, Layer.BACKGROUND);
+        }
+
+        Rain rain = new Rain(this, cloud, imageReader);
+        avatar.registerJumpObserver(rain);
+
     }
 
     public static void main(String[] args) {
         new PepseGameManager().run();
 
+    }
+
+    public void addObject(GameObject object, int background) {
+        gameObjects().addGameObject(object, background);
+    }
+
+    public void removeObject(GameObject object) {
+        gameObjects().removeGameObject(object);
     }
 }
