@@ -12,12 +12,14 @@ public class Tree {
 
     private final Trunk trunk;
     private final List<Leaf> leaves;
+    private final List<Fruit> fruits;
     private final int treeHeight;
 
-    public Tree(Trunk trunk, List<Leaf> leaves,int treeHeight) {
+    public Tree(Trunk trunk, List<Leaf> leaves,List<Fruit> fruits,int treeHeight) {
         this.trunk = trunk;
         this.leaves = leaves;
         this.treeHeight = treeHeight;
+        this.fruits = fruits;
     }
 
     public List<Leaf> getLeaves() {
@@ -30,5 +32,9 @@ public class Tree {
 
     public int getTreeHeight() {
         return treeHeight;
+    }
+
+    public List<Fruit> getFruits() {
+        return fruits;
     }
 }
