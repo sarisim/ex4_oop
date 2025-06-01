@@ -83,46 +83,93 @@ public class Avatar extends GameObject {
     public void update(float deltaTime) {
         super.update(deltaTime);
         float xVel = 0;
-        //calculate the moving direction horizontally
-        if(inputListener.isKeyPressed(KeyEvent.VK_LEFT))
-            xVel -= VELOCITY_X;
-        if(inputListener.isKeyPressed(KeyEvent.VK_RIGHT))
-            xVel += VELOCITY_X;
-        //check if the player is able to move,
-        if (xVel != 0){
-        if (updateEnergy(State.RUN)){
-            //according to the direction, update the animation direction
-            renderer().setRenderable(RUN_ANIMATION);
-            if (xVel>0){
-                renderer().setIsFlippedHorizontally(walkingDirection);
-                walkingDirection = false;
-            }
-            if (xVel < 0){
-                renderer().setIsFlippedHorizontally(walkingDirection);
-                walkingDirection = true;
-            }
-        }
+
+        // Determine horizontal input
+        boolean left = inputListener.isKeyPressed(KeyEvent.VK_LEFT);
+        boolean right = inputListener.isKeyPressed(KeyEvent.VK_RIGHT);
+        boolean moved = false;
+
+        if (left) xVel -= VELOCITY_X;
+        if (right) xVel += VELOCITY_X;
+
+        // Handle running movement if energy allows
+        if (xVel != 0 && updateEnergy(State.RUN)) {
             transform().setVelocityX(xVel);
-        }
-        // if the player don't move, set the velocity to 0
-        else {
+            renderer().setRenderable(RUN_ANIMATION);
+            renderer().setIsFlippedHorizontally(xVel < 0);
+            walkingDirection = xVel < 0;
+            moved = true;
+        } else {
             transform().setVelocityX(0);
         }
-        //jumping state
-        if(inputListener.isKeyPressed(KeyEvent.VK_SPACE) && getVelocity().y() == 0) {
-            if(updateEnergy(State.JUMP)){
-                transform().setVelocityY(VELOCITY_Y);}
+
+        // Handle jumping
+        boolean isOnGround = getVelocity().y() == 0;
+        if (inputListener.isKeyPressed(KeyEvent.VK_SPACE) && isOnGround) {
+            if (updateEnergy(State.JUMP)) {
+                transform().setVelocityY(VELOCITY_Y);
                 renderer().setRenderable(JUMP_ANIMATION);
-            for (JumpObserver observer : this.JumpObservers){
-                observer.update(true);
+                for (JumpObserver observer : JumpObservers) {
+                    observer.update(true);
+                }
             }
         }
-        //idle state
-        if (getVelocity().y() == 0 && getVelocity().x() == 0){
+
+        // Handle idle state
+        boolean isIdle = isOnGround && getVelocity().x() == 0;
+        if (isIdle && !moved) {
             updateEnergy(State.IDLE);
             renderer().setRenderable(IDLE_ANIMATION);
         }
     }
+
+//    @Override
+//    public void update(float deltaTime) {
+//        super.update(deltaTime);
+//        float xVel = 0;
+//        //calculate the moving direction horizontally
+//        if(inputListener.isKeyPressed(KeyEvent.VK_LEFT))
+//            xVel -= VELOCITY_X;
+//        if(inputListener.isKeyPressed(KeyEvent.VK_RIGHT))
+//            xVel += VELOCITY_X;
+//        //check if the player is able to move,
+//        if (xVel != 0){
+//            if (updateEnergy(State.RUN)){
+//                //according to the direction, update the animation direction
+//                renderer().setRenderable(RUN_ANIMATION);
+//                if (xVel>0){
+//                    renderer().setIsFlippedHorizontally(walkingDirection);
+//                    walkingDirection = false;
+//                }
+//                if (xVel < 0){
+//                    renderer().setIsFlippedHorizontally(walkingDirection);
+//                    walkingDirection = true;
+//                }
+//                transform().setVelocityX(xVel);
+//            } //*TODO I ADDED HERE THE TRANSFORM ELSE BC HE WAS MOVING WITH NO ENERGY, NEED TO CHECK
+//            else {
+//                transform().setVelocityX(0);
+//            }
+//        }
+//        // if the player don't move, set the velocity to 0
+//        else {
+//            transform().setVelocityX(0);
+//        }
+//        //jumping state
+//        if(inputListener.isKeyPressed(KeyEvent.VK_SPACE) && getVelocity().y() == 0) {
+//            if(updateEnergy(State.JUMP)){
+//                transform().setVelocityY(VELOCITY_Y);}
+//                renderer().setRenderable(JUMP_ANIMATION);
+//            for (JumpObserver observer : this.JumpObservers){
+//                observer.update(true);
+//            }
+//        }
+//        //idle state
+//        if (getVelocity().y() == 0 && getVelocity().x() == 0){
+//            updateEnergy(State.IDLE);
+//            renderer().setRenderable(IDLE_ANIMATION);
+//        }
+//    }
 
     @Override
     public void onCollisionEnter(GameObject other, Collision collision) {

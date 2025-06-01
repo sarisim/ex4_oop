@@ -10,7 +10,7 @@ import danogl.components.Transition;
 
 public class Sun {
 
-    private static final Vector2 SUN_DIMENSIONS = new Vector2(100, 100);
+    private static final Vector2 SUN_DIMENSIONS = new Vector2(75, 75);
     private static final float HEIGHT_RATIO = 0.66f;
     public static final Float STARTING_POINT_SUN_ANGLE = 0f;
     public static final Float ENDING_POINT_SUN_ANGLE = 360f;

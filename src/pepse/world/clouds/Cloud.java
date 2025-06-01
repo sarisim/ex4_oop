@@ -51,6 +51,26 @@ public class Cloud  {
         transitionColor();
     }
 
+//    public Vector2 getCenter() {
+//        float xSum = 0;
+//        float ySum = 0;
+//        for (CloudBlock block : blocks) {
+//            Vector2 center = block.getCenter();
+//            xSum += center.x();
+//            ySum += center.y();
+//        }
+//        return new Vector2(xSum / blocks.size(), ySum / blocks.size());
+//    }
+//
+//    public void setCenter(Vector2 newCenter) {
+//        Vector2 currentCenter = getCenter();
+//        Vector2 delta = newCenter.subtract(currentCenter);
+//        for (CloudBlock block : blocks) {
+//            block.setCenter(block.getCenter().add(delta));
+//        }
+//    }
+
+
     private void transitionColor() {
 
         Transition<Float> transition = new Transition<>(
