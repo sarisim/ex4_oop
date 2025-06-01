@@ -3,7 +3,6 @@ package pepse;
 import danogl.GameManager;
 import danogl.GameObject;
 import danogl.collisions.Layer;
-import danogl.components.ScheduledTask;
 import danogl.gui.ImageReader;
 import danogl.gui.SoundReader;
 import danogl.gui.UserInputListener;
@@ -11,29 +10,24 @@ import danogl.gui.WindowController;
 import danogl.gui.rendering.Camera;
 import danogl.util.Vector2;
 import pepse.world.Avatar;
-import pepse.world.Block;
 import pepse.world.Terrain;
 import pepse.world.UI.EneregyUi;
-import pepse.world.daynight.SkyManager;
-import pepse.world.daynight.Sun;
-import pepse.world.trees.*;
 import pepse.world.clouds.Cloud;
 import pepse.world.clouds.CloudBlock;
 import pepse.world.clouds.Rain;
 import pepse.world.trees.Flora;
-import pepse.world.trees.Leaf;
-import pepse.world.trees.Tree;
-import pepse.world.trees.Trunk;
 
 import java.util.List;
+import java.util.Random;
 
 public class PepseGameManager extends GameManager {
+
+    int worldSeed = new Random().nextInt();
 
 
     private static final float NIGHT_CYCLE_LENGTH = 30;
     private static final float DAY_CYCLE_LENGTH = 60;
     private static final float SIZE_CLOUD = 20;
-    private final float TEST = 0.5f;
     Avatar avatar;
     Terrain terrain;
     Flora flora;
@@ -43,7 +37,8 @@ public class PepseGameManager extends GameManager {
     EndlessWorldManager endlessWorldManager;
 
     @Override
-    public void initializeGame(ImageReader imageReader, SoundReader soundReader, UserInputListener inputListener, WindowController windowController) {
+    public void initializeGame(ImageReader imageReader, SoundReader soundReader,
+                               UserInputListener inputListener, WindowController windowController) {
         super.initializeGame(imageReader, soundReader, inputListener, windowController);
         windowController.setTargetFramerate(60);
         this.windowDims = windowController.getWindowDimensions();
@@ -51,25 +46,13 @@ public class PepseGameManager extends GameManager {
         createNight();
         this.sun = createSunAndHalo();
         int avatarInitialX = (int) (windowDims.x() / 2f);
-        this.terrain = new Terrain(windowDims, 1234);
+        this.terrain = new Terrain(windowDims, worldSeed);
         int avatarInitialY = (int) (terrain.groundHeightAt(avatarInitialX) - Avatar.AVATAR_SIZE);
 
         createAvatar(avatarInitialX, avatarInitialY, inputListener, imageReader);
         createEnergyUi(avatar);
-        Flora flora = new Flora(terrain::groundHeightAt, 42);
+        Flora flora = new Flora(terrain::groundHeightAt, worldSeed);
         this.flora = flora;
-//        Tree tree = flora.createTree(new Vector2(200,terrain.groundHeightAt(200)));
-//        List<Tree> trees = flora.createInRange(0,(int)windowController.getWindowDimensions().x(),
-//                gameObjects()::addGameObject);
-//        for (Tree tree : trees) {
-//            gameObjects().addGameObject(tree.getTrunk(),Layer.DEFAULT);
-//            for (Leaf leaf : tree.getLeaves()) {
-//                gameObjects().addGameObject(leaf,Layer.STATIC_OBJECTS);
-//            }
-//            for (Fruit fruit : tree.getFruits()){
-//                gameObjects().addGameObject(fruit,Layer.DEFAULT);
-//            }
-//        }
 
         Vector2 initialAvatarLocation = new Vector2(avatar.getTopLeftCorner().x(),
                 terrain.groundHeightAt(avatar.getTopLeftCorner().x()) - Avatar.AVATAR_SIZE);
@@ -87,9 +70,6 @@ public class PepseGameManager extends GameManager {
         Rain rain = new Rain(gameObjects()::addGameObject, gameObjects()::removeGameObject,
                 cloud, imageReader, camera);
         avatar.registerJumpObserver(rain);
-
-        SkyManager skyManager = new SkyManager(sun, cloud);
-        this.skyManager = skyManager;
 
         endlessWorldManager = new EndlessWorldManager(terrain, flora,
                 gameObjects()::addGameObject, gameObjects()::removeGameObject,
@@ -119,19 +99,6 @@ public class PepseGameManager extends GameManager {
 
     }
 
-    private void createTerrain(int avatarInitialX) {
-//        List<Block> blocks = terrain.createInRange(0, (int) windowDims.x());
-//        for (Block block : blocks) {
-//            gameObjects().addGameObject(block, Layer.DEFAULT);
-//        }
-//        this.terrain = terrain;
-//        terrain.updateTerrainRange(
-//                avatarInitialX,
-//                (int) windowDims.x(),
-//                gameObjects()::addGameObject,
-//                gameObjects()::removeGameObject
-//        );
-    }
 
     private GameObject createSunAndHalo() {
         GameObject sun = pepse.world.daynight.Sun.create(windowDims, DAY_CYCLE_LENGTH);
