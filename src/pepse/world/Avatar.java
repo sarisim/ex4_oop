@@ -176,54 +176,6 @@ public class Avatar extends GameObject {
         }
     }
 
-//    @Override
-//    public void update(float deltaTime) {
-//        super.update(deltaTime);
-//        float xVel = 0;
-//        //calculate the moving direction horizontally
-//        if(inputListener.isKeyPressed(KeyEvent.VK_LEFT))
-//            xVel -= VELOCITY_X;
-//        if(inputListener.isKeyPressed(KeyEvent.VK_RIGHT))
-//            xVel += VELOCITY_X;
-//        //check if the player is able to move,
-//        if (xVel != 0){
-//            if (updateEnergy(State.RUN)){
-//                //according to the direction, update the animation direction
-//                renderer().setRenderable(RUN_ANIMATION);
-//                if (xVel>0){
-//                    renderer().setIsFlippedHorizontally(walkingDirection);
-//                    walkingDirection = false;
-//                }
-//                if (xVel < 0){
-//                    renderer().setIsFlippedHorizontally(walkingDirection);
-//                    walkingDirection = true;
-//                }
-//                transform().setVelocityX(xVel);
-//            } //*TODO I ADDED HERE THE TRANSFORM ELSE BC HE WAS MOVING WITH NO ENERGY, NEED TO CHECK
-//            else {
-//                transform().setVelocityX(0);
-//            }
-//        }
-//        // if the player don't move, set the velocity to 0
-//        else {
-//            transform().setVelocityX(0);
-//        }
-//        //jumping state
-//        if(inputListener.isKeyPressed(KeyEvent.VK_SPACE) && getVelocity().y() == 0) {
-//            if(updateEnergy(State.JUMP)){
-//                transform().setVelocityY(VELOCITY_Y);}
-//                renderer().setRenderable(JUMP_ANIMATION);
-//            for (JumpObserver observer : this.JumpObservers){
-//                observer.update(true);
-//            }
-//        }
-//        //idle state
-//        if (getVelocity().y() == 0 && getVelocity().x() == 0){
-//            updateEnergy(State.IDLE);
-//            renderer().setRenderable(IDLE_ANIMATION);
-//        }
-//    }
-
     /**
      * Handles collision events with other GameObjects.
      * If the avatar collides with a block, it stops vertical movement.
