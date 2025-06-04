@@ -33,7 +33,6 @@ public class PepseGameManager extends GameManager {
     Flora flora;
     GameObject sun;
     private Vector2 windowDims;
-//    SkyManager skyManager;
     EndlessWorldManager endlessWorldManager;
 
     @Override
@@ -51,6 +50,7 @@ public class PepseGameManager extends GameManager {
 
         createAvatar(avatarInitialX, avatarInitialY, inputListener, imageReader);
         createEnergyUi(avatar);
+
         Flora flora = new Flora(terrain::groundHeightAt, worldSeed);
         this.flora = flora;
 
