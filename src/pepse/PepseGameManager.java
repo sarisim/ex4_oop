@@ -33,7 +33,7 @@ public class PepseGameManager extends GameManager {
     Flora flora;
     GameObject sun;
     private Vector2 windowDims;
-    SkyManager skyManager;
+//    SkyManager skyManager;
     EndlessWorldManager endlessWorldManager;
 
     @Override

@@ -2,13 +2,15 @@ package pepse.world.UI;
 
 import danogl.GameObject;
 import danogl.components.CoordinateSpace;
-import danogl.gui.rendering.Renderable;
 import danogl.gui.rendering.TextRenderable;
 import danogl.util.Vector2;
-import pepse.world.Avatar;
 
 import java.util.function.Supplier;
 
+/**
+ * Represents a UI element that displays the player's energy level.
+ * The energy level is updated based on a supplier function that provides the current energy value.
+ */
 public class EneregyUi extends GameObject {
 
     private final Supplier<Float> energyFunc;
@@ -26,9 +28,13 @@ public class EneregyUi extends GameObject {
         this.energyFunc = func;
         this.energy = func.get();
         setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
-
     }
 
+    /**
+     * Sets the energy level to a new value.
+     *
+     * @param deltaTime The new energy level to set.
+     */
     @Override
     public void update(float deltaTime) {
         super.update(deltaTime);

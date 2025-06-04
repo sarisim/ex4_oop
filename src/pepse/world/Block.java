@@ -5,7 +5,15 @@ import danogl.components.GameObjectPhysics;
 import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
 
+/**
+ * Represents a block in the game world.
+ * A Block is a GameObject that can be rendered and has a fixed size.
+ * It is immovable and prevents intersections from any direction.
+ */
 public class Block extends GameObject {
+    /**
+     * The size of the block in pixels.
+     */
     public static final int SIZE = 30;
     /**
      * Construct a new GameObject instance.
