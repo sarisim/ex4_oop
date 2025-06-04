@@ -19,38 +19,52 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 
+
+/**
+ * Represents the avatar in the game world.
+ * The avatar can run, jump, and interact with the environment.
+ * It has animations for idle, running, and jumping states,
+ * and manages its energy levels based on actions performed.
+ */
 public class Avatar extends GameObject {
+
     private static final float GRAVITY = 600;
     private static final float VELOCITY_X = 400;
     private static final float VELOCITY_Y = -650;
-    /* * The size of the avatar in pixels.
+    /** The size of the avatar in pixels.
      * This is used to determine the size of the avatar's bounding box and its appearance.
      */
     public static final int AVATAR_SIZE = 50;
-    /* * The maximum energy level of the avatar.
-     * This is used to determine how much energy the avatar can expend on actions like running and jumping.
-     */
-    public static final int MAX_ENERGY = 100;
-    /* * The time between animation clips in seconds.
-     * This is used to control the speed of the avatar's animations.
-     */
-    public static final double TIME_BETWEEN_CLIPS = 0.5;
-    /* * The minimum energy required for the avatar to jump.
-     * This is used to prevent the avatar from jumping if it doesn't have enough energy.
-     */
-    public static final int MIN_ENERGY_TO_JUMP = 10;
-    /* * The rate at which the avatar regenerates energy while idle.
-     * This is used to allow the avatar to regain energy over time when not performing actions.
-     */
-    public static final double IDLE_REGEN_RATE = 1.0f;
-    /* * The minimum energy required for the avatar to run.
-     * This is used to prevent the avatar from running if it doesn't have enough energy.
-     */
-    public static final float MIN_EMERGY_TO_RUN = 0.5f;
+    private static final int MAX_ENERGY = 100;
+    private static final double TIME_BETWEEN_CLIPS = 0.5;
+    private static final int MIN_ENERGY_TO_JUMP = 10;
+    private static final double IDLE_REGEN_RATE = 1.0f;
+    private static final float MIN_EMERGY_TO_RUN = 0.5f;
 
-    // Enum for Avatar states
+    /**
+     * Represents the different states of the avatar.
+     * IDLE: The avatar is not moving.
+     * RUN: The avatar is running.
+     * JUMP: The avatar is jumping.
+     * FRUIT: The avatar has collected a fruit and gained energy.
+     */
     public static enum State {
-        IDLE, RUN, JUMP,FRUIT
+        /**
+         * The avatar is not moving.
+         */
+        IDLE,
+        /**
+         * The avatar is running.
+         */
+        RUN,
+        /**
+         * The avatar is jumping.
+         */
+        JUMP,
+        /**
+         * The avatar has collected a fruit and gained energy.
+         */
+        FRUIT
     }
     private float energy;
     private final AnimationRenderable IDLE_ANIMATION;
@@ -242,9 +256,15 @@ public class Avatar extends GameObject {
                 return false;
         }
     }
+
+    /**
+     * Registers a JumpObserver to be notified when the avatar jumps.
+     * This allows other game objects to respond to the jump action.
+     *
+     * @param gameObject The JumpObserver to register.
+     */
     public void registerJumpObserver(JumpObserver gameObject){
         this.JumpObservers.add(gameObject);
     }
-
 
 }

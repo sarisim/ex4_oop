@@ -20,6 +20,11 @@ import pepse.world.trees.Flora;
 import java.util.List;
 import java.util.Random;
 
+/**
+ * PepseGameManager is the main game manager for the Pepse game.
+ * It initializes the game, creates the terrain, avatar, flora, and manages the day-night cycle.
+ * It also handles the endless world generation and updates the game state.
+ */
 public class PepseGameManager extends GameManager {
 
     int worldSeed = new Random().nextInt();
@@ -116,12 +121,19 @@ public class PepseGameManager extends GameManager {
 
     }
 
+
     private void createSky() {
         GameObject sky = pepse.world.Sky.create(windowDims);
         gameObjects().addGameObject(sky, Layer.BACKGROUND);
 
     }
 
+    /**
+     * The main method to run the Pepse game.
+     * It creates an instance of PepseGameManager and calls its run method.
+     *
+     * @param args Command line arguments (not used).
+     */
     public static void main(String[] args) {
         new PepseGameManager().run();
 

@@ -53,9 +53,11 @@ public class EndlessWorldManager {
     }
 
     /**
-     * Updates the world by generating or removing terrain blocks and trees based on the position of the object to follow.
+     * Updates the world by generating or removing terrain blocks and trees based on the position of the
+     * object to follow.
      *
-     * @param deltaTime The time elapsed since the last update, not used in this method but required by the interface.
+     * @param deltaTime The time elapsed since the last update, not used in this method but required
+     *                 by the interface.
      */
     public void update(float deltaTime) {
         Vector2 center = objectToFollow.getCenter();

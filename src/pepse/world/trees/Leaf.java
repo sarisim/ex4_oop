@@ -20,7 +20,9 @@ public class Leaf extends GameObject {
     private static final int ANGLE_TRANSITION_TIME = 1;
     private static final float ANGLE = 30f;
     private static final int FLOAT_GENERTOR_BOUND = 5;
-    // Length of the leaf in pixels
+    /** The length of the leaf in pixels.
+     * This is used to define the size of the leaf.
+     */
     public static int LEAF_LENGTH = 20;
     private final static Vector2 LEAF_SIZE = new Vector2(LEAF_LENGTH,LEAF_LENGTH);
     private final static Vector2 LEAF_SMALL_SIZE = new Vector2(15,15);
@@ -57,7 +59,8 @@ public class Leaf extends GameObject {
 
     /**
      * Creates transitions for the leaf's angle and size.
-     * The angle will oscillate between -ANGLE and ANGLE, and the size will oscillate between LEAF_SIZE and LEAF_SMALL_SIZE.
+     * The angle will oscillate between -ANGLE and ANGLE, and the size will oscillate
+     * between LEAF_SIZE and LEAF_SMALL_SIZE.
      *
      * @param leaf The Leaf object to which the transitions will be applied.
      */
