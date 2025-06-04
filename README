@@ -4,15 +4,16 @@ bar.adika,sari_sim.6
 We choose to implemtent the Trees package in sevral classes:
 Flora - the main class that generates the trees at random locations.
 Trunk- the class that represents the trunk of a tree, with properties like height and diameter.
-Leaf - the class that represents the leaves of a tree, with properties like color and size and the moving in the
-wind logic.
-Fruit - the class that represents the fruit of a tree, with properties like type and the reappearance after eaten
- feature.
+Leaf - the class that represents the leaves of a tree, with properties like color and size and
+the moving in the wind logic.
+Fruit - the class that represents the fruit of a tree, with properties like type and
+the reappearance after eaten feature.
 Tree - the class that represents a single tree, contains a trunk and lists of the fruits and leaves.
 
-The Flora class is responsible for generating a forest of trees, each with its own trunk, leaves, and fruits at
-random locations. The trees are generated with random properties for their trunks, leaves, and fruits.
+The Flora class is responsible for generating a forest of trees, each with its own trunk, leaves,
+and fruits at random locations. The trees are generated with random properties for their trunks,
+leaves, and fruits.
 the Flora class uses a callback function to decide at which height to generate the trees.
-The Game manger calls the FLora class Create method to generate the trees and then he adds them to the game world
-object by object.
+The Game manger calls the FLora class Create method to generate the trees and then he adds them
+to the game world object by object.
 

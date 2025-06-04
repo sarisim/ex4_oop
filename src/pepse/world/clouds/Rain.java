@@ -21,7 +21,7 @@ import java.util.Vector;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-/*
+/**
  * Rain class generates a rain effect by creating raindrop GameObjects that fall from a Cloud object.
  * It implements the JumpObserver interface to trigger the rain effect when a jump occurs.
  */

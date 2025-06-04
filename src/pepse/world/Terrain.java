@@ -16,7 +16,8 @@ import java.util.List;
 /**
  * Represents the terrain in the game world.
  * The terrain is generated using Perlin noise and consists of blocks that form the ground.
- * It provides methods to calculate ground height at a specific x-coordinate and to create blocks in a specified range.
+ * It provides methods to calculate ground height at a specific x-coordinate and to create blocks
+ * in a specified range.
  */
 public class Terrain {
     private static final double FACTOR = Block.SIZE * 7;
@@ -39,11 +40,25 @@ public class Terrain {
         this.noiseGenerator = new NoiseGenerator(seed, groundHeightAtX0);
     }
 
+    /**
+     * Calculates the ground height at a specific x-coordinate using Perlin noise.
+     *
+     * @param x The x-coordinate for which to calculate the ground height.
+     * @return The ground height at the specified x-coordinate.
+     */
     public float groundHeightAt(float x) {
         float noise = (float) noiseGenerator.noise(x, FACTOR);
         return groundHeightAtX0 + noise;
     }
 
+    /**
+     * Creates a list of blocks representing the terrain in a specified range.
+     * Each block is positioned at the ground height calculated for its x-coordinate.
+     *
+     * @param startX The starting x-coordinate for the range.
+     * @param endX   The ending x-coordinate for the range.
+     * @return A list of Block objects representing the terrain in the specified range.
+     */
     public List<Block> createInRange(int startX, int endX) {
         List<Block> blocks = new ArrayList<>();
 

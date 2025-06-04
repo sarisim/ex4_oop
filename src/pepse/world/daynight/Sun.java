@@ -16,7 +16,15 @@ public class Sun {
 
     private static final Vector2 SUN_DIMENSIONS = new Vector2(75, 75);
     private static final float HEIGHT_RATIO = 0.66f;
+    /**
+     * The starting and ending angles for the sun's movement in degrees.
+     * The sun will move from 0 degrees (east) to 360 degrees (back to east).
+     */
     protected static final Float STARTING_POINT_SUN_ANGLE = 0f;
+    /**
+     * The ending angle for the sun's movement in degrees.
+     * This is set to 360 degrees to complete a full cycle.
+     */
     protected static final Float ENDING_POINT_SUN_ANGLE = 360f;
     private static Vector2 cycleCenter;
 
