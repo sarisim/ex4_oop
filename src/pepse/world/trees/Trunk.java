@@ -3,11 +3,14 @@ package pepse.world.trees;
 import danogl.GameObject;
 import danogl.components.GameObjectPhysics;
 import danogl.gui.rendering.RectangleRenderable;
-import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
 
 import java.awt.*;
 
+/**
+ * Represents a trunk of a tree in the game world.
+ * The trunk is a rectangular object with a specific color and immovable physics properties.
+ */
 public class Trunk extends GameObject {
     private static final Color TRUNK_COLOR = new Color(100, 50, 20);
 

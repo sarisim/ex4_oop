@@ -21,6 +21,10 @@ import java.util.Vector;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+/*
+ * Rain class generates a rain effect by creating raindrop GameObjects that fall from a Cloud object.
+ * It implements the JumpObserver interface to trigger the rain effect when a jump occurs.
+ */
 public class Rain implements JumpObserver {
 
     private final Cloud cloud;
@@ -29,9 +33,20 @@ public class Rain implements JumpObserver {
     private final ImageReader imageReader;
     private final Camera camera;
 
-
-    public Rain(BiConsumer<GameObject, Integer> gameObjectAdder, BiConsumer<GameObject, Integer> gameObjectRemover,
-             Cloud cloud, ImageReader imageReader, Camera camera) {
+    /**
+     * Constructor for Rain class.
+     *
+     * @param gameObjectAdder   Function to add a GameObject to the game.
+     * @param gameObjectRemover Function to remove a GameObject from the game.
+     * @param cloud             The Cloud object from which the rain originates.
+     * @param imageReader       ImageReader for loading images.
+     * @param camera            Camera for rendering the rain in the correct position.
+     */
+    public Rain(BiConsumer<GameObject, Integer> gameObjectAdder,
+                BiConsumer<GameObject, Integer> gameObjectRemover,
+                Cloud cloud,
+                ImageReader imageReader,
+                Camera camera) {
         this.addObjectFunc = gameObjectAdder;
         this.removeObjectFunc = gameObjectRemover;
         this.cloud = cloud;
@@ -39,6 +54,12 @@ public class Rain implements JumpObserver {
         this.camera = camera;
     }
 
+    /**
+     * Creates a rain effect by generating raindrop GameObjects and adding them to the game.
+     * The raindrops fall from the cloud's position and fade out over time.
+     *
+     * @param jump Indicates whether to create raindrops (true) or not (false).
+     */
     @Override
     public void update(boolean jump) {
         if (!jump) return;
@@ -91,57 +112,4 @@ public class Rain implements JumpObserver {
         }
     }
 
-
-//    @Override
-//    public void update(boolean jump) {
-//        if (jump) {
-//            List<GameObject> raindrops = new ArrayList<>();
-//            List<CloudBlock> blocks = cloud.getBlocks();
-////            if (blocks.isEmpty()) return;
-////            float minX = Float.MAX_VALUE;
-////            float maxX = Float.MIN_VALUE;
-//            Vector2 topLeftCorner = blocks.get(0).getInitialPosition();
-//            float y = topLeftCorner.y() + cloud.getCloudHeight();
-//            float cloudWidth = cloud.getCloudWidth();
-////            Vector2 cloudPos = cloud.getPosition();
-////            float cloudBound = cloud.getCloudBound();
-//
-//            Random rand = new Random();
-//            for (int i = 0; i<rand.nextInt(2,6); i++) {
-//                float randX = topLeftCorner.x() + rand.nextFloat() * cloudWidth;
-//                Renderable r = imageReader.readImage("assets/raindrop.png",true);
-//                GameObject raindrop = new GameObject(new Vector2(randX,y), new Vector2(20, 20), r);
-//                raindrop.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
-//                Vector2 worldPos = raindrop.getCenter();
-//                raindrop.setCoordinateSpace(CoordinateSpace.WORLD_COORDINATES);
-//                raindrop.setCenter(worldPos);
-//                Vector2 velocity = new Vector2(0, 100 + rand.nextFloat() * 100); // 100–200 px/sec
-//                raindrop.setVelocity(velocity);
-//                this.addObjectFunc.accept(raindrop, Layer.BACKGROUND);
-//                raindrops.add(raindrop);
-//                raindrop.transform().setAccelerationY(600);
-//            }
-//
-//            for (GameObject raindrop : raindrops) {
-//                new Transition<>(
-//                        raindrop,
-//                        (Float opacity) -> {
-//                            raindrop.renderer().setOpaqueness(opacity);
-//                            if (opacity <= 0f) {
-//                                removeObjectFunc.accept(raindrop, Layer.BACKGROUND);
-//                            }
-//                        },
-//                        1f,
-//                        0f,
-//                        Transition.LINEAR_INTERPOLATOR_FLOAT,
-//                        3f, // fade-out duration in seconds
-//                        Transition.TransitionType.TRANSITION_ONCE,
-//                        null
-//                );
-//
-//            }
-//        }
-//
-//
-//    }
 }

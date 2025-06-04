@@ -13,7 +13,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.function.BiConsumer;
 
-
+/**
+ * Manages the endless world generation by creating and removing terrain blocks and trees
+ * based on the position of the object to follow (usually the player).
+ * It ensures that the terrain and flora are generated dynamically as the player moves.
+ */
 public class EndlessWorldManager {
     private final Terrain terrain;
     private final Flora flora;
@@ -26,6 +30,16 @@ public class EndlessWorldManager {
     private final HashSet<Integer> currChunks = new HashSet<>();
     private int blockSize;
 
+    /**
+     * Constructs an EndlessWorldManager instance.
+     *
+     * @param terrain          The terrain object used for generating blocks.
+     * @param flora            The flora object used for generating trees.
+     * @param gameObjectAdder  Function to add a GameObject to the game.
+     * @param gameObjectRemover Function to remove a GameObject from the game.
+     * @param objectToFollow   The GameObject that the camera will follow (usually the player).
+     * @param windowDims       The dimensions of the game window.
+     */
     public EndlessWorldManager(Terrain terrain, Flora flora, BiConsumer<GameObject, Integer> gameObjectAdder,
                                BiConsumer<GameObject, Integer> gameObjectRemover,
                                GameObject objectToFollow, Vector2 windowDims) {
@@ -38,6 +52,11 @@ public class EndlessWorldManager {
         this.windowDims = windowDims;
     }
 
+    /**
+     * Updates the world by generating or removing terrain blocks and trees based on the position of the object to follow.
+     *
+     * @param deltaTime The time elapsed since the last update, not used in this method but required by the interface.
+     */
     public void update(float deltaTime) {
         Vector2 center = objectToFollow.getCenter();
 
@@ -85,6 +104,14 @@ public class EndlessWorldManager {
     currChunks.removeIf(chunk -> chunk < minChunk || chunk > maxChunk);
     }
 
+    /**
+     * Checks if a GameObject is within the bounds of the current chunks.
+     *
+     * @param obj       The GameObject to check.
+     * @param minChunk  The minimum chunk index.
+     * @param maxChunk  The maximum chunk index.
+     * @return true if the object is within bounds, false otherwise.
+     */
     private boolean checkIfInBounds(GameObject obj, int minChunk, int maxChunk) {
         Vector2 position = obj.getCenter();
         int chunkX = (int) Math.floor(position.x() / blockSize);

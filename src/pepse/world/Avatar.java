@@ -23,13 +23,32 @@ public class Avatar extends GameObject {
     private static final float GRAVITY = 600;
     private static final float VELOCITY_X = 400;
     private static final float VELOCITY_Y = -650;
+    /* * The size of the avatar in pixels.
+     * This is used to determine the size of the avatar's bounding box and its appearance.
+     */
     public static final int AVATAR_SIZE = 50;
+    /* * The maximum energy level of the avatar.
+     * This is used to determine how much energy the avatar can expend on actions like running and jumping.
+     */
     public static final int MAX_ENERGY = 100;
+    /* * The time between animation clips in seconds.
+     * This is used to control the speed of the avatar's animations.
+     */
     public static final double TIME_BETWEEN_CLIPS = 0.5;
+    /* * The minimum energy required for the avatar to jump.
+     * This is used to prevent the avatar from jumping if it doesn't have enough energy.
+     */
     public static final int MIN_ENERGY_TO_JUMP = 10;
-    public static final double IDLE_REGEN_RATE = 0.5;
+    /* * The rate at which the avatar regenerates energy while idle.
+     * This is used to allow the avatar to regain energy over time when not performing actions.
+     */
+    public static final double IDLE_REGEN_RATE = 1.0f;
+    /* * The minimum energy required for the avatar to run.
+     * This is used to prevent the avatar from running if it doesn't have enough energy.
+     */
     public static final float MIN_EMERGY_TO_RUN = 0.5f;
 
+    // Enum for Avatar states
     public static enum State {
         IDLE, RUN, JUMP,FRUIT
     }
@@ -41,6 +60,13 @@ public class Avatar extends GameObject {
     private final HashSet<JumpObserver> JumpObservers = new HashSet<JumpObserver>();
     private final UserInputListener inputListener;
 
+    /**
+     * Constructs a new Avatar instance.
+     *
+     * @param topLeftCorner The top-left corner position of the Avatar in window coordinates (pixels).
+     * @param inputListener The UserInputListener to handle user inputs.
+     * @param imageReader   The ImageReader to read images for animations.
+     */
     public Avatar(Vector2 topLeftCorner,
                   UserInputListener inputListener,
                   ImageReader imageReader){
@@ -55,6 +81,14 @@ public class Avatar extends GameObject {
         JUMP_ANIMATION = getJumpAnimation(imageReader);
     }
 
+    /**
+     * Creates the jump animation for the Avatar.
+     * The jump animation consists of 3 frames,
+     * each representing a different pose of the avatar during a jump.
+     *
+     * @param imageReader The ImageReader to read images for the jump animation.
+     * @return An AnimationRenderable containing the jump animation frames.
+     */
     private AnimationRenderable getJumpAnimation(ImageReader imageReader) {
         Renderable[] clips = new Renderable[4];
         for (int i = 0; i < clips.length; i++) {
@@ -63,6 +97,13 @@ public class Avatar extends GameObject {
         return new AnimationRenderable(clips, TIME_BETWEEN_CLIPS);
     }
 
+    /**
+     * Creates the run animation for the Avatar.
+     * The run animation consists of 5 frames, each representing a different running pose of the avatar.
+     *
+     * @param imageReader The ImageReader to read images for the run animation.
+     * @return An AnimationRenderable containing the run animation frames.
+     */
     private AnimationRenderable getRunAnimation(ImageReader imageReader) {
         Renderable[] clips = new Renderable[5];
         for (int i = 0; i < clips.length; i++) {
@@ -71,6 +112,13 @@ public class Avatar extends GameObject {
         return new AnimationRenderable(clips, TIME_BETWEEN_CLIPS);
     }
 
+    /**
+     * Creates the idle animation for the Avatar.
+     * The idle animation consists of 4 frames, each representing a different pose of the avatar.
+     *
+     * @param imageReader The ImageReader to read images for the idle animation.
+     * @return An AnimationRenderable containing the idle animation frames.
+     */
     private AnimationRenderable getIdleAnimation(ImageReader imageReader) {
         Renderable[] clips = new Renderable[4];
         for (int i = 0; i < clips.length; i++) {
@@ -79,6 +127,11 @@ public class Avatar extends GameObject {
         return new AnimationRenderable(clips, TIME_BETWEEN_CLIPS);
     }
 
+    /**
+     * Initializes the Avatar by setting its initial renderable and adding it to the game.
+     *
+     * @param deltaTime differnece in time since the last frame, in seconds.
+     */
     @Override
     public void update(float deltaTime) {
         super.update(deltaTime);
@@ -171,6 +224,14 @@ public class Avatar extends GameObject {
 //        }
 //    }
 
+    /**
+     * Handles collision events with other GameObjects.
+     * If the avatar collides with a block, it stops vertical movement.
+     * If it collides with a fruit, it updates energy and removes the fruit.
+     *
+     * @param other The other GameObject involved in the collision.
+     * @param collision The Collision object containing collision details.
+     */
     @Override
     public void onCollisionEnter(GameObject other, Collision collision) {
         super.onCollisionEnter(other, collision);
@@ -183,11 +244,23 @@ public class Avatar extends GameObject {
             fruit.removeAndAddFruit();
         }
     }
-
+    /**
+     * Returns the current energy level of the avatar.
+     *
+     * @return The current energy level as a float.
+     */
     public float getEnergy() {
         return energy;
     }
-    public boolean updateEnergy(State state) {
+
+    /**
+     * Updates the energy level of the avatar based on the current state.
+     * The energy is consumed or regenerated depending on the action performed.
+     *
+     * @param state The current state of the avatar (RUN, JUMP, IDLE, FRUIT).
+     * @return true if the action was successful (energy was consumed), false otherwise.
+     */
+    private boolean updateEnergy(State state) {
         switch (state){
             case RUN:
                 if (this.energy >= MIN_EMERGY_TO_RUN){

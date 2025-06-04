@@ -1,5 +1,6 @@
 package pepse.world;
 //
+
 import danogl.GameObject;
 import danogl.collisions.GameObjectCollection;
 import danogl.collisions.Layer;
@@ -12,16 +13,26 @@ import pepse.util.NoiseGenerator;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
-
+/**
+ * Represents the terrain in the game world.
+ * The terrain is generated using Perlin noise and consists of blocks that form the ground.
+ * It provides methods to calculate ground height at a specific x-coordinate and to create blocks in a specified range.
+ */
 public class Terrain {
     private static final double FACTOR = Block.SIZE * 7;
     private static final Color BASE_GROUND_COLOR = new Color(212, 123, 74);
-    private static final int TERRAIN_DEPTH = 20;
+    private static final int TERRAIN_DEPTH = 25;
 
     private final int groundHeightAtX0;
     private final NoiseGenerator noiseGenerator;
     private final Vector2 winDims;
 
+    /**
+     * Constructs a Terrain object with specified window dimensions and seed for noise generation.
+     *
+     * @param windowDimensions The dimensions of the game window.
+     * @param seed             The seed for the noise generator to create consistent terrain.
+     */
     public Terrain(Vector2 windowDimensions, int seed) {
         this.winDims = windowDimensions;
         this.groundHeightAtX0 = (int) (windowDimensions.y() * 0.66f);
@@ -41,7 +52,8 @@ public class Terrain {
             int groundTop = (int) (Math.floor(height / Block.SIZE) * Block.SIZE);
             for (int y = groundTop, i = 0; i < TERRAIN_DEPTH; i++, y += Block.SIZE) {
                 Vector2 pos = new Vector2(x, y);
-                Renderable renderable = new RectangleRenderable(ColorSupplier.approximateColor(BASE_GROUND_COLOR));
+                Renderable renderable =
+                        new RectangleRenderable(ColorSupplier.approximateColor(BASE_GROUND_COLOR));
                 Block block = new Block(pos, renderable);
                 block.setTag("ground");
                 blocks.add(block);
@@ -50,6 +62,10 @@ public class Terrain {
         return blocks;
     }
 
+    /**
+     *  getter for the block size used in the terrain.
+     *
+     */
     public int getBlockSize() {
         return Block.SIZE;
     }

@@ -1,20 +1,20 @@
 package pepse.world.trees;
 
 import danogl.GameObject;
-import danogl.collisions.Collision;
-import danogl.collisions.Layer;
 import danogl.components.ScheduledTask;
 import danogl.gui.rendering.OvalRenderable;
-import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
-import pepse.world.Avatar;
 
 import java.awt.*;
 
+/**
+ * Represents a fruit in the game world.
+ * The fruit can be eaten by the avatar, which will trigger a respawn after a certain time.
+ */
 public class Fruit extends GameObject {
-    public static final int FRUIT_RESPWAN_TIME = 30;
-    private static final Color FRUIT_COLOR = new Color(200, 50, FRUIT_RESPWAN_TIME);
-    private final static Vector2 FRUIT_SIZE = new Vector2(15,15);
+    private static final int FRUIT_RESPAWN_TIME = 30;
+    private static final Color FRUIT_COLOR = new Color(200, 50, 30);
+    private static final  Vector2 FRUIT_SIZE = new Vector2(15, 15);
 
 
     /**
@@ -27,15 +27,21 @@ public class Fruit extends GameObject {
         super(topLeftCorner, FRUIT_SIZE, new OvalRenderable(FRUIT_COLOR));
     }
 
-    public void removeAndAddFruit(){
+    /**
+     * Removes the fruit from the game world and schedules its respawn after a certain time.
+     * The fruit will become invisible (opaqueness set to 0) when eaten.
+     */
+    public void removeAndAddFruit() {
         renderer().setOpaqueness(0);
         this.setTag("eaten fruit");
         new ScheduledTask(
                 this,
-                FRUIT_RESPWAN_TIME,
+                FRUIT_RESPAWN_TIME,
                 false,
-                ()->{this.renderer().setOpaqueness(1);
-                this.setTag("fruit");}
+                () -> {
+                    this.renderer().setOpaqueness(1);
+                    this.setTag("fruit");
+                }
         );
     }
 }
